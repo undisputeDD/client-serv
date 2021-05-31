@@ -10,7 +10,12 @@ public class Data {
         state=2;
     }
     public void Tak(){
-        System.out.println("Tak");
+        System.out.print("Tak-");
+        state=3;
+    }
+
+    public void Toy(){
+        System.out.println("Toy");
         state=1;
     }
 }

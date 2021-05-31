@@ -21,8 +21,10 @@ public class Worker extends Thread{
 					}
 					if (workState == 1) {
 						data.Tic();
-					} else {
+					} else if (workState == 2) {
 						data.Tak();
+					} else {
+						data.Toy();
 					}
 					data.notifyAll();
 				}
