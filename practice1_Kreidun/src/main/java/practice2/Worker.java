@@ -16,13 +16,8 @@ public class Worker extends Thread{
 		try {
 			for (int i = 0; i < 5; i++) {
 				synchronized (data) {
-					while (true) {
-						if (workState != data.getState()) {
-							data.notifyAll();
-							data.wait();
-						} else {
-							break;
-						}
+					while (workState != data.getState()) {
+						data.wait();
 					}
 					if (workState == 1) {
 						data.Tic();
