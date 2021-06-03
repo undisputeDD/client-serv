@@ -6,6 +6,7 @@ import practice1.Packet;
 import java.net.DatagramPacket;
 import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -15,29 +16,32 @@ import java.util.concurrent.ConcurrentMap;
 public class ClientProcessor extends Thread {
 
     private final byte clientId;
-    public static final Deque<Packet> queue = new ConcurrentLinkedDeque<>();
+    public static Deque<Packet> queue = new ConcurrentLinkedDeque<>();
     private SocketAddress socketAddress;
+    long lastId;
 
     public ClientProcessor(byte clientId) {
         super("client processor " + clientId);
         this.clientId = clientId;
+        lastId = -1;
         start();
     }
 
     public void acceptPacket(Packet requestPacket, SocketAddress socketAddress) {
         System.out.println("packet received: " + requestPacket);
+        System.out.println(new String(requestPacket.getMessage()));
         this.socketAddress = socketAddress;
-        System.out.println("zashlo");
-        if (!queue.isEmpty() && queue.getLast().getPacketId() + 1 != requestPacket.getPacketId()) {
-            System.out.println("HEIHEIHEI");
-            Packet responsePacket = new Packet(clientId, queue.getLast().getPacketId() + 1, -1, -1, ("Missed packet #" + queue.getLast().getPacketId() + 1).getBytes(StandardCharsets.UTF_8));
+        if (lastId == -1)
+            lastId = requestPacket.getPacketId();
+        else if (lastId + 1 != requestPacket.getPacketId()) {
+            //System.out.println("HEIHEIHEI");
+            Packet responsePacket = new Packet(clientId, lastId + 1, -1, -1, ("Missed packet #" + lastId + 1).getBytes(StandardCharsets.UTF_8));
             ServerQueue.QUEUE.add(new AddressedPacket(responsePacket, socketAddress));
         } else {
-            queue.add(requestPacket);
             Packet responsePacket = new Packet(clientId, requestPacket.getPacketId(), requestPacket.getCode(), requestPacket.getUser(), "accepted".getBytes(StandardCharsets.UTF_8));
             ServerQueue.QUEUE.add(new AddressedPacket(responsePacket, socketAddress));
+            lastId = requestPacket.getPacketId();
         }
-        System.out.println("vishlo");
     }
 
     @Override

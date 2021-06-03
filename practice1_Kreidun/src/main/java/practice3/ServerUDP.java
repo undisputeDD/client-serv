@@ -57,8 +57,10 @@ public class ServerUDP {
                 }
                 Packet packet = Main.decodePackage(Arrays.copyOfRange(datagramPacket.getData(), 0, datagramPacket.getLength()));
 
+                System.out.println(packet.getClient());
                 clientMap.computeIfAbsent(packet.getClient(), key -> new ClientProcessor(packet.getClient()))
                         .acceptPacket(packet, datagramPacket.getSocketAddress());
+                Thread.sleep(100);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
