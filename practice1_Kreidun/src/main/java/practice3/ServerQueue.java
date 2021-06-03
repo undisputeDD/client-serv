@@ -1,7 +1,5 @@
 package practice3;
 
-import practice1.Packet;
-
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
