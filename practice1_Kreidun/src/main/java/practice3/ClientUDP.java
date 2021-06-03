@@ -31,7 +31,7 @@ public class ClientUDP {
         DatagramPacket datagramPacket = new DatagramPacket(encodePackage, encodePackage.length, InetAddress.getByName(null), ServerUDP.PORT);
         try {
             socket.send(datagramPacket);
-            packetsToSend.add(Main.decodePackage(Arrays.copyOfRange(datagramPacket.getData(), 0, datagramPacket.getLength())));
+            packets.add(Main.decodePackage(Arrays.copyOfRange(datagramPacket.getData(), 0, datagramPacket.getLength())));
         } catch (IOException e) {
             e.printStackTrace();
         }

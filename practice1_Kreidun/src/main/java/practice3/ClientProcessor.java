@@ -27,7 +27,9 @@ public class ClientProcessor extends Thread {
     public void acceptPacket(Packet requestPacket, SocketAddress socketAddress) {
         System.out.println("packet received: " + requestPacket);
         this.socketAddress = socketAddress;
-        if (queue.getLast().getPacketId() + 1 != requestPacket.getPacketId()) {
+        System.out.println("zashlo");
+        if (!queue.isEmpty() && queue.getLast().getPacketId() + 1 != requestPacket.getPacketId()) {
+            System.out.println("HEIHEIHEI");
             Packet responsePacket = new Packet(clientId, queue.getLast().getPacketId() + 1, -1, -1, ("Missed packet #" + queue.getLast().getPacketId() + 1).getBytes(StandardCharsets.UTF_8));
             ServerQueue.QUEUE.add(new AddressedPacket(responsePacket, socketAddress));
         } else {
@@ -35,6 +37,7 @@ public class ClientProcessor extends Thread {
             Packet responsePacket = new Packet(clientId, requestPacket.getPacketId(), requestPacket.getCode(), requestPacket.getUser(), "accepted".getBytes(StandardCharsets.UTF_8));
             ServerQueue.QUEUE.add(new AddressedPacket(responsePacket, socketAddress));
         }
+        System.out.println("vishlo");
     }
 
     @Override

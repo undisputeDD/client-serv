@@ -53,12 +53,13 @@ public class ClientTester {
             try {
                 Thread.sleep(new Random().nextInt(100));
 
-                System.out.println(packets.size());
                 ClientUDP client = new ClientUDP(packets);
                 for (int j = 0; j < packets.size(); ++j) {
                     client.send(j);
                 }
+                System.out.println("AAA");
                 System.out.println(client.receive());
+                System.out.println("BBB");
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
