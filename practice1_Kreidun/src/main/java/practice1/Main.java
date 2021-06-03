@@ -29,7 +29,7 @@ public class Main {
         System.out.println(packet1.toString());
     }
 
-    public static Packet decodePackage(byte[] bytes) throws Exception {
+    public static Packet decodePackage(byte[] bytes) {
         ByteBuffer bb = ByteBuffer.wrap(bytes).order(ByteOrder.BIG_ENDIAN);
 
         if (bb.get() != MAGIC_BYTE) {
@@ -37,17 +37,17 @@ public class Main {
         }
 
         byte client = bb.get();
-        System.out.println("client: " + client);
+        //System.out.println("client: " + client);
         long packet = bb.getLong();
-        System.out.println("packetId: " + packet);
+        //System.out.println("packetId: " + packet);
         int messageLength = bb.getInt();
-        System.out.println("length: " + messageLength);
+        //System.out.println("length: " + messageLength);
         short crc16Head = bb.getShort();
-        System.out.println("crc16 head: " + crc16Head);
+        //System.out.println("crc16 head: " + crc16Head);
         int code = bb.getInt();
-        System.out.println("code: " + code);
+        //System.out.println("code: " + code);
         int user = bb.getInt();
-        System.out.println("user: " + user);
+        //System.out.println("user: " + user);
 
         byte[] head = ByteBuffer.allocate(14)
                 .order(ByteOrder.BIG_ENDIAN)
@@ -103,18 +103,23 @@ public class Main {
     }
 
     //generateKey() is used to generate a secret key for AES algorithm
-    private static Key generateKey() throws Exception
+    private static Key generateKey()
     {
         return new SecretKeySpec(keyValue, algorithm);
     }
 
-    public static String decryptMessage(String message) throws Exception {
-        Key key = generateKey();
-        Cipher cipher = Cipher.getInstance(algorithm);
-        cipher.init(Cipher.DECRYPT_MODE, key);
-        byte[] decodedValue = Base64.getDecoder().decode(message);
-        byte[] decValue = cipher.doFinal(decodedValue);
-        return new String(decValue);
+    public static String decryptMessage(String message) {
+        try {
+            Key key = generateKey();
+            Cipher cipher = Cipher.getInstance(algorithm);
+            cipher.init(Cipher.DECRYPT_MODE, key);
+            byte[] decodedValue = Base64.getDecoder().decode(message);
+            byte[] decValue = cipher.doFinal(decodedValue);
+            return new String(decValue);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
     }
 
 }

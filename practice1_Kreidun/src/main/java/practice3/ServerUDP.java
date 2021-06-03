@@ -21,8 +21,12 @@ public class ServerUDP {
     public ServerUDP() throws SocketException {
         socket = new DatagramSocket(PORT);
         clientMap = new ConcurrentHashMap<>();
+    }
 
+    public void start() {
         new Thread(this::send, "Sender")
+                .start();
+        new Thread(this::receive, "Receiver")
                 .start();
     }
 
@@ -42,17 +46,22 @@ public class ServerUDP {
         }
     }
 
-    public Packet receive() throws Exception {
-        DatagramPacket datagramPacket = new DatagramPacket(new byte [1000], 1000);
-        try {
-            socket.receive(datagramPacket);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Packet packet = Main.decodePackage(Arrays.copyOfRange(datagramPacket.getData(), 0, datagramPacket.getLength()));
+    private void receive() {
+        while (true) {
+            try {
+                DatagramPacket datagramPacket = new DatagramPacket(new byte[1000], 1000);
+                try {
+                    socket.receive(datagramPacket);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Packet packet = Main.decodePackage(Arrays.copyOfRange(datagramPacket.getData(), 0, datagramPacket.getLength()));
 
-        clientMap.computeIfAbsent(packet.getClient(), key -> new ClientProcessor(packet.getClient()))
-                .acceptPacket(packet, datagramPacket.getSocketAddress());
-        return packet;
+                clientMap.computeIfAbsent(packet.getClient(), key -> new ClientProcessor(packet.getClient()))
+                        .acceptPacket(packet, datagramPacket.getSocketAddress());
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
     }
 }
