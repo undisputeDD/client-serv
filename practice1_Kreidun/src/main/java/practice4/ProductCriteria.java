@@ -8,6 +8,18 @@ public class ProductCriteria {
     private Double amountFrom;
     private Double amountTo;
 
+    public ProductCriteria() {
+
+    }
+
+    public ProductCriteria(String name, Double priceFrom, Double priceTo, Double amountFrom, Double amountTo) {
+        this.name = name;
+        this.priceFrom = priceFrom;
+        this.priceTo = priceTo;
+        this.amountFrom = amountFrom;
+        this.amountTo = amountTo;
+    }
+
     public String getName() {
         return name;
     }
