@@ -77,12 +77,35 @@ public class SQLTest {
         return null;
     }
 
-    public List<Product> getByCriteria(){
-        
+    public List<Product> getByCriteria(ProductCriteria productCriteria) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("SELECT * FROM product WHERE ");
+
+        if (productCriteria.getName() != null) {
+            sb.append(" name like '%").append(productCriteria.getName()).append("%' and ");
+        }
+
+        if (productCriteria.getPriceFrom() != null) {
+            sb.append(" price >= ").append(productCriteria.getPriceFrom()).append(" and ");
+        }
+
+        if (productCriteria.getPriceTo() != null) {
+            sb.append(" price <= ").append(productCriteria.getPriceTo()).append(" and ");
+        }
+
+        if (productCriteria.getAmountFrom() != null) {
+            sb.append(" amount >= ").append(productCriteria.getAmountFrom()).append(" and ");
+        }
+
+        if (productCriteria.getAmountTo() != null) {
+            sb.append(" amount <= ").append(productCriteria.getAmountTo()).append(" and ");
+        }
+
+        sb.append(" 1 = 1");
 
         try (
                 Statement st = con.createStatement();
-                ResultSet res = st.executeQuery("SELECT * FROM product")
+                ResultSet res = st.executeQuery(sb.toString())
         ) {
             List<Product> result = new ArrayList<>();
             int i = 0;
@@ -110,11 +133,43 @@ public class SQLTest {
         SQLTest sqlTest = new SQLTest();
         sqlTest.initialization("HelloDB");
         Product prod1 = sqlTest.insertProduct(new Product("product1", 10.5, 5.5));
-        System.out.println(prod1);
+        //System.out.println(prod1);
         Product prod2 = sqlTest.insertProduct(new Product("product2", 10, 5.5));
-        System.out.println(prod2);
+        //System.out.println(prod2);
         Product prod3 = sqlTest.insertProduct(new Product("product3", 10, 5));
-        System.out.println(prod3);
+        //System.out.println(prod3);
+        Product prod4 = sqlTest.insertProduct(new Product("some", 100, 7));
+
+        ProductCriteria productCriteria = new ProductCriteria();
+        System.out.println(sqlTest.getByCriteria(productCriteria));
+
+        productCriteria = new ProductCriteria();
+        productCriteria.setName("prod");
+        System.out.println(sqlTest.getByCriteria(productCriteria));
+
+        productCriteria = new ProductCriteria();
+        productCriteria.setAmountFrom(5.5);
+        System.out.println(sqlTest.getByCriteria(productCriteria));
+
+        productCriteria = new ProductCriteria();
+        productCriteria.setName("some");
+        productCriteria.setAmountTo(8.0);
+        System.out.println(sqlTest.getByCriteria(productCriteria));
+
+        productCriteria = new ProductCriteria();
+        productCriteria.setName("some");
+        productCriteria.setAmountTo(6.0);
+        System.out.println(sqlTest.getByCriteria(productCriteria));
+
+        productCriteria = new ProductCriteria();
+        productCriteria.setName("prod");
+        productCriteria.setPriceTo(10.0);
+        System.out.println(sqlTest.getByCriteria(productCriteria));
+
+        productCriteria = new ProductCriteria();
+        productCriteria.setPriceFrom(10.1);
+        System.out.println(sqlTest.getByCriteria(productCriteria));
+
         System.out.println(sqlTest.getAllProducts());
     }
 }
