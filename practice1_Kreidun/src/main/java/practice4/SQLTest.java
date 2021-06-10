@@ -131,7 +131,7 @@ public class SQLTest {
         return null;
     }
 
-    public Product updateProduct(Product product) {
+    public void updateProduct(Product product) {
         try (PreparedStatement statement = con.prepareStatement("UPDATE product SET name = ?, price = ?, amount = ? WHERE id = ?")) {
             statement.setString(1, product.getName());
             statement.setDouble(2, product.getPrice());
@@ -144,8 +144,26 @@ public class SQLTest {
             System.out.println("Не вірний SQL запит на вставку");
             e.printStackTrace();
         }
-        return null;
+    }
 
+    public void deleteProductByName(String name) {
+        try (PreparedStatement statement = con.prepareStatement("DELETE FROM product WHERE name = '" + name + "';");) {
+            System.out.println(statement.toString());
+            statement.executeUpdate();
+        }catch (SQLException e){
+            System.out.println("Не вірний SQL запит на вставку");
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteProductById(int id) {
+        try (PreparedStatement statement = con.prepareStatement("DELETE FROM product WHERE id = '" + id + "';");) {
+            System.out.println(statement.toString());
+            statement.executeUpdate();
+        }catch (SQLException e){
+            System.out.println("Не вірний SQL запит на вставку");
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args){
@@ -194,5 +212,14 @@ public class SQLTest {
         sqlTest.updateProduct(new Product(1, "someProd", 1000, 25));
 
         System.out.println(sqlTest.getAllProducts());
+
+        sqlTest.deleteProductByName("someProd");
+
+        System.out.println(sqlTest.getAllProducts());
+
+        sqlTest.deleteProductById(4);
+
+        System.out.println(sqlTest.getAllProducts());
+
     }
 }
