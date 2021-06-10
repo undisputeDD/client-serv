@@ -131,7 +131,7 @@ public class SQLTest {
         return null;
     }
 
-    public void updateProduct(Product product) {
+    public Product updateProduct(Product product) {
         try (PreparedStatement statement = con.prepareStatement("UPDATE product SET name = ?, price = ?, amount = ? WHERE id = ?")) {
             statement.setString(1, product.getName());
             statement.setDouble(2, product.getPrice());
@@ -140,10 +140,12 @@ public class SQLTest {
 
             System.out.println(statement.toString());
             statement.executeUpdate();
+            return product;
         }catch (SQLException e){
             System.out.println("Не вірний SQL запит на вставку");
             e.printStackTrace();
         }
+        return null;
     }
 
     public void deleteProductByName(String name) {
