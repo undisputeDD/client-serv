@@ -31,7 +31,8 @@ public class SQLTest {
         }
 
     }
-    
+
+    // Or Create
     public Product insertProduct(Product product){
         try (PreparedStatement statement = con.prepareStatement("INSERT INTO product(name, price, amount) VALUES (?, ?, ?)")) {
             statement.setString(1, product.getName());
@@ -77,6 +78,7 @@ public class SQLTest {
         return null;
     }
 
+    // Also can be considered as Read method
     public List<Product> getByCriteria(ProductCriteria productCriteria) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM product WHERE ");
@@ -128,7 +130,24 @@ public class SQLTest {
         }
         return null;
     }
-    
+
+    public Product updateProduct(Product product) {
+        try (PreparedStatement statement = con.prepareStatement("UPDATE product SET name = ?, price = ?, amount = ? WHERE id = ?")) {
+            statement.setString(1, product.getName());
+            statement.setDouble(2, product.getPrice());
+            statement.setDouble(3, product.getAmount());
+            statement.setInt(4, product.getId());
+
+            System.out.println(statement.toString());
+            statement.executeUpdate();
+        }catch (SQLException e){
+            System.out.println("Не вірний SQL запит на вставку");
+            e.printStackTrace();
+        }
+        return null;
+
+    }
+
     public static void main(String[] args){
         SQLTest sqlTest = new SQLTest();
         sqlTest.initialization("HelloDB");
@@ -169,6 +188,10 @@ public class SQLTest {
         productCriteria = new ProductCriteria();
         productCriteria.setPriceFrom(10.1);
         System.out.println(sqlTest.getByCriteria(productCriteria));
+
+        System.out.println(sqlTest.getAllProducts());
+
+        sqlTest.updateProduct(new Product(1, "someProd", 1000, 25));
 
         System.out.println(sqlTest.getAllProducts());
     }
