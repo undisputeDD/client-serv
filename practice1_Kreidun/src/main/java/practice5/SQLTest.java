@@ -121,6 +121,30 @@ public class SQLTest {
         return null;
     }
 
+    public Product getProduct(String productId){
+        try (
+                Statement st = con.createStatement();
+                ResultSet res = st.executeQuery("SELECT * FROM product WHERE id = " + productId)
+        ) {
+            if (res.next()) {
+                Integer id = res.getInt("id");
+                String name = res.getString("name");
+                Double price = res.getDouble("price");
+                Double amount = res.getDouble("amount");
+
+                Product product = new Product(id, name, price, amount);
+                res.close();
+                st.close();
+                return product;
+            }
+            return null;
+        }catch(SQLException e){
+            System.out.println("Не вірний SQL запит на вибірку даних");
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     // Also can be considered as Read method
     public List<Product> getByCriteria(ProductCriteria productCriteria) {
         StringBuilder sb = new StringBuilder();
@@ -189,6 +213,14 @@ public class SQLTest {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public boolean checkProduct(Product product) {
+        if (product.getAmount() < 0)
+            return false;
+        if (product.getPrice() < 0)
+            return false;
+        return !product.getName().equals("");
     }
 
     public void deleteProductByName(String name) {

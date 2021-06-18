@@ -11,6 +11,10 @@ public class Product {
     private double price;
     private double amount;
 
+    public Product() {
+
+    }
+
     public Product(Integer id, String name, double price, double amount) {
         this.id = id;
         this.name = name;
