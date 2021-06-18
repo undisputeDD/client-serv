@@ -21,6 +21,16 @@ public class SQLTest {
                             + "'amount' double"
                             + ");");
             int result = st.executeUpdate();
+            st.close();
+
+            st = con.prepareStatement(
+                    "create table if not exists 'users' ("
+                            + "'id' INTEGER PRIMARY KEY AUTOINCREMENT, "
+                            + "'login' text unique, "
+                            + "'password' text"
+                            + ");");
+            result = st.executeUpdate();
+            st.close();
         }catch(ClassNotFoundException e){
             System.out.println("Не знайшли драйвер JDBC");
             e.printStackTrace();
@@ -46,6 +56,39 @@ public class SQLTest {
             return product;
         }catch (SQLException e){
             System.out.println("Не вірний SQL запит на вставку");
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public User insertUser(User user){
+        try (PreparedStatement statement = con.prepareStatement("INSERT INTO users(login, password) VALUES (?, ?)")) {
+            statement.setString(1, user.getLogin());
+            statement.setString(2, user.getPassword());
+
+            statement.executeUpdate();
+            ResultSet resultSet = statement.getGeneratedKeys();
+            user.setId(resultSet.getInt("last_insert_rowid()"));
+
+            return user;
+        }catch (SQLException e){
+            System.out.println("Не вірний SQL запит на вставку");
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public User getUserByLogin(String login){
+        try (
+                Statement st = con.createStatement();
+                ResultSet res = st.executeQuery("SELECT * FROM users WHERE login='" + login + "'")
+        ) {
+            if (res.next()) {
+                return new User(res.getInt("id"), res.getString("login"), res.getString("password"));
+            }
+            return null;
+        } catch(SQLException e){
+            System.out.println("Не вірний SQL запит на вибірку даних");
             e.printStackTrace();
         }
         return null;
@@ -178,6 +221,9 @@ public class SQLTest {
         Product prod3 = sqlTest.insertProduct(new Product("product3", 10, 5));
         //System.out.println(prod3);
         Product prod4 = sqlTest.insertProduct(new Product("some", 100, 7));
+
+        sqlTest.insertUser(new User("user1", "password1"));
+        System.out.println(sqlTest.getUserByLogin("user1"));
 
         ProductCriteria productCriteria = new ProductCriteria();
         System.out.println(sqlTest.getByCriteria(productCriteria));
